@@ -1,8 +1,8 @@
 #include <Arduino.h>
 
 int IN_PIN = 14;
-int THRESH = 100;
-int BOUNCE = 200;
+int THRESH = 325;
+int BOUNCE = 150;
 
 unsigned long lastStateTime = 0;
 bool touching = false;
