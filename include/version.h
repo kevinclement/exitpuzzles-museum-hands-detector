@@ -14,8 +14,8 @@ const char * git_date = GIT_DATE;
 const char * date_now = DATE_NOW;
 
 // e.g. museum-hands-detector vb7e8fa7-dirty (2009-11-10 11:09)
-String getFullVersion(char* appName) {
+String getFullVersion(const char* appName) {
     char data[100];
-    sprintf(data, "%s  v%s (%s)", appName, git_hash, date_now);
+    sprintf(data, "info: %s  v%s (%s)", appName, git_hash, date_now);
     return data;
 }

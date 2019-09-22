@@ -12,9 +12,8 @@ bool lastTouchState = false;
 bool isTouching = false;
 
 void setup() {
-  Serial.begin(9600);
-  Serial.println("Museum Hand Detector by kevinc...\n");
-
+  Serial.begin(9600);  
+  Serial.println("Museum Hand Detector by kevinc...");
   Serial.println(getFullVersion("museum-hands-detector"));
 }
 
