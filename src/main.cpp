@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "version.h"
 
 int IN_PIN = 14;
 int THRESH = 325;
@@ -13,7 +14,11 @@ bool isTouching = false;
 void setup() {
   Serial.begin(9600);
   Serial.println("Museum Hand Detector by kevinc...\n");
+
+  Serial.println(getFullVersion("museum-hands-detector"));
 }
+
+// status=version:vb7e8fa7-dirty,buildDate:2009-11-10 11:09,gitDate:2019-08-06 14:51:47
 
 void loop() {
     int total1 = analogRead(IN_PIN);
