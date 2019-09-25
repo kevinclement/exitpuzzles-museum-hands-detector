@@ -3,7 +3,7 @@
 
 #define IN_PIN 14
 #define THRESH 325
-#define BOUNCE 3150
+#define BOUNCE 150
 
 // functions
 void readAnySerialMessage();
