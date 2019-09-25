@@ -1,46 +1,102 @@
 #include <Arduino.h>
 #include "version.h"
 
-int IN_PIN = 14;
-int THRESH = 325;
-int BOUNCE = 150;
+#define IN_PIN 14
+#define THRESH 325
+#define BOUNCE 3150
 
-unsigned long lastStateTime = 0;
-bool touching = false;
-bool lastTouchState = false;
+// functions
+void readAnySerialMessage();
+bool currentlyTouching();
+void status();
+void solved();
+void(* resetFunc) (void) = 0;
 
 bool isTouching = false;
+unsigned long touch_timestamp = 0;
+bool _mock = false;
+bool _debug = false;
 
 void setup() {
-  Serial.begin(9600);  
+  Serial.begin(9600);
+  Serial.setTimeout(10);
+
   Serial.println("Museum Hand Detector by kevinc...");
   Serial.println(getFullVersion("museum-hands-detector"));
+
+  status();
 }
 
-// status=version:vb7e8fa7-dirty,buildDate:2009-11-10 11:09,gitDate:2019-08-06 14:51:47
-
 void loop() {
-    int total1 = analogRead(IN_PIN);
+  readAnySerialMessage();
 
-    //Serial.println(total1);
-    if ((!lastTouchState && total1 > THRESH) || 
-        (lastTouchState && total1 < THRESH)) {
-      lastStateTime = millis();
+  if (!currentlyTouching()) {
+    if (isTouching) {
+      Serial.println("finished holding hands.");
+      isTouching = false;
+      status();
     }
+    touch_timestamp = 0;
+  } else if(touch_timestamp <= 0) {
+    touch_timestamp = millis();
+  } else if (!isTouching && millis() - touch_timestamp > BOUNCE) {
+    Serial.println("held hands.");
+    isTouching = true;
+    status();
+  }
 
-    if ((millis() - lastStateTime) > BOUNCE) {
+  delay(10);
+}
 
-      if (touching && !lastTouchState) {
-        Serial.println("OFF#");
-        touching = false;
-      }
+void status() {
+  char cMsg[254];
+  sprintf(cMsg, 
+    "status="
+      "version:%s,"
+      "gitDate:%s,"
+      "buildDate:%s,"
+      "touching:%s"
+    , GIT_HASH,
+      GIT_DATE,
+      DATE_NOW,
+      isTouching ? "true" : "false");
 
-      if (!touching && lastTouchState) {
-        Serial.println("ON#");
-        touching = true;
-      }
-    }
+  Serial.println(cMsg);
+}
 
-    lastTouchState = total1 > THRESH;
-    delay(10);
+void toggle() {
+
+}
+
+bool currentlyTouching() {
+  return analogRead(IN_PIN) > THRESH || _mock;
+}
+
+void readAnySerialMessage() {
+  if (!Serial.available()) {
+    return;
+  }
+
+  String msg = Serial.readStringUntil('\n');
+  Serial.print("got '");
+  Serial.print(msg);
+  Serial.println("' command");
+
+  if (msg == "mock" || msg == "m") {
+    Serial.println("mocking a touch event...");
+    _mock = !_mock;
+  }
+  else if (msg == "debug" || msg == "x") {
+    Serial.println("toggling debug...");
+    _debug = !_debug;
+  }
+  else if (msg == "toggle" || msg == "t") {
+    toggle();
+  }
+  else if (msg == "reset" || msg == "reboot" || msg == "r") {
+    resetFunc();
+  } else {
+    Serial.print("unknown command: ");
+    Serial.println(msg);
+  }
 }
