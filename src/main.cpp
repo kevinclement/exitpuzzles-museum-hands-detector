@@ -55,11 +55,13 @@ void status() {
       "version:%s,"
       "gitDate:%s,"
       "buildDate:%s,"
-      "touching:%s"
+      "touching:%s,"
+      "mock:%s"
     , GIT_HASH,
       GIT_DATE,
       DATE_NOW,
-      isTouching ? "true" : "false");
+      isTouching ? "true" : "false",
+      _mock ? "true" : "false");
 
   Serial.println(cMsg);
 }
