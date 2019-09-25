@@ -64,12 +64,14 @@ void status() {
   Serial.println(cMsg);
 }
 
-void toggle() {
-
-}
-
 bool currentlyTouching() {
-  return analogRead(IN_PIN) > THRESH || _mock;
+  int curVal = analogRead(IN_PIN);
+  if (_debug) {
+    Serial.print("current value: ");
+    Serial.println(curVal);
+  }
+
+  return curVal > THRESH || _mock;
 }
 
 void readAnySerialMessage() {
@@ -89,9 +91,6 @@ void readAnySerialMessage() {
   else if (msg == "debug" || msg == "x") {
     Serial.println("toggling debug...");
     _debug = !_debug;
-  }
-  else if (msg == "toggle" || msg == "t") {
-    toggle();
   }
   else if (msg == "reset" || msg == "reboot" || msg == "r") {
     resetFunc();
