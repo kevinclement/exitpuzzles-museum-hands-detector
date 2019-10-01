@@ -2,7 +2,7 @@
 #include "version.h"
 
 #define IN_PIN 14
-#define THRESH 325
+#define THRESH 180
 #define BOUNCE 150
 
 // functions
